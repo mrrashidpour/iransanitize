@@ -1,14 +1,16 @@
 package mobile
 
 import (
-	"github.com/mrrashidpour/iransanitize/internal/common"
 	"regexp"
 	"strings"
+
+	"github.com/mrrashidpour/iransanitize/internal/common"
 )
 
 // Sanitize شماره موبایل را پاکسازی و استاندارد می‌کند
 // خروجی: شماره موبایل ۱۱ رقمی با فرمت 09XXXXXXXXX
 // در صورت نامعتبر بودن: رشته خالی برگشت داده می‌شود
+// Sanitize شماره موبایل را پاکسازی و استاندارد می‌کند
 func Sanitize(mobile string, opts ...Option) string {
 	if mobile == "" {
 		return ""
@@ -23,22 +25,31 @@ func Sanitize(mobile string, opts ...Option) string {
 	// مرحله 1: پاکسازی اولیه
 	mobile = strings.TrimSpace(mobile)
 	mobile = common.RemoveSpecialChars(mobile)
-	mobile = common.ConvertPersianArabicToEnglish(mobile)
 
-	// مرحله 2: حذف پیشوندهای بین‌المللی
+	// مرحله 2: تبدیل اعداد فقط در حالت غیر StrictMode
+	if !option.StrictMode {
+		mobile = common.ConvertPersianArabicToEnglish(mobile)
+	} else {
+		// در حالت StrictMode، بررسی کن که همه کاراکترها انگلیسی باشند
+		if !common.IsAllEnglishDigits(mobile) {
+			return ""
+		}
+	}
+
+	// مرحله 3: حذف پیشوندهای بین‌المللی
 	mobile = removeInternationalPrefixes(mobile)
 
-	// مرحله 3: اصلاح نقطه ابتدایی
+	// مرحله 4: اصلاح نقطه ابتدایی
 	if strings.HasPrefix(mobile, ".") {
 		mobile = "0" + mobile[1:]
 	}
 
-	// مرحله 4: افزودن صفر ابتدایی در صورت نیاز
+	// مرحله 5: افزودن صفر ابتدایی در صورت نیاز
 	if option.AddZeroPrefix && !strings.HasPrefix(mobile, "0") {
 		mobile = "0" + mobile
 	}
 
-	// مرحله 5: اعتبارسنجی نهایی
+	// مرحله 6: اعتبارسنجی نهایی
 	if !isValidFormat(mobile, option) {
 		return ""
 	}
@@ -117,6 +128,11 @@ func isValidFormat(mobile string, option Option) bool {
 		return false
 	}
 
+	// در حالت StrictMode، بررسی کن که آیا عدد فارسی/عربی وجود داشته
+	if option.StrictMode && common.HasPersianOrArabicDigits(mobile) {
+		return false
+	}
+
 	// بررسی فرمت با regex
 	var pattern *regexp.Regexp
 	if option.StrictMode {
@@ -130,14 +146,15 @@ func isValidFormat(mobile string, option Option) bool {
 	}
 
 	// بررسی معتبر بودن سه رقم اول
-	prefix := mobile[0:3]
-	validPrefixes := map[string]bool{
-		"091": true, "092": true, "093": true, "094": true,
-		"095": true, "096": true, "097": true, "098": true, "099": true,
-	}
-
-	if option.ValidatePrefix && !validPrefixes[prefix] {
-		return false
+	if option.ValidatePrefix {
+		prefix := mobile[0:3]
+		validPrefixes := map[string]bool{
+			"091": true, "092": true, "093": true, "094": true,
+			"095": true, "096": true, "097": true, "098": true, "099": true,
+		}
+		if !validPrefixes[prefix] {
+			return false
+		}
 	}
 
 	return true
