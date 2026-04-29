@@ -36,11 +36,33 @@ func ConvertPersianArabicToEnglish(s string) string {
 	return string(result)
 }
 
-// RemoveSpecialChars removes special characters from string
+// RemoveSpecialChars removes special characters but keeps hyphens and slashes
 func RemoveSpecialChars(s string) string {
 	replacer := strings.NewReplacer(
 		" ", "",
+		"+", "",
+		"(", "",
+		")", "",
+		"_", "",
 		"-", "",
+		".", "",
+		"،", "",
+		"؛", "",
+		"*", "",
+		"#", "",
+		"@", "",
+		"!", "",
+		"?", "",
+	)
+	return replacer.Replace(s)
+}
+
+// RemoveAllSpecialChars removes ALL special characters including hyphens and slashes
+func RemoveAllSpecialChars(s string) string {
+	replacer := strings.NewReplacer(
+		" ", "",
+		"-", "",
+		"/", "",
 		"+", "",
 		"(", "",
 		")", "",
@@ -65,18 +87,7 @@ func IsAllDigits(s string) bool {
 	return true
 }
 
-// RemoveNonDigits removes all non-digit characters
-func RemoveNonDigits(s string) string {
-	result := make([]rune, 0, len(s))
-	for _, ch := range s {
-		if unicode.IsDigit(ch) {
-			result = append(result, ch)
-		}
-	}
-	return string(result)
-}
-
-// IsAllEnglishDigits بررسی می‌کند که همه کاراکترها ارقام انگلیسی باشند
+// IsAllEnglishDigits checks if all characters are English digits (0-9)
 func IsAllEnglishDigits(s string) bool {
 	if s == "" {
 		return false
@@ -89,7 +100,7 @@ func IsAllEnglishDigits(s string) bool {
 	return true
 }
 
-// HasPersianOrArabicDigits بررسی می‌کند که آیا رشته دارای اعداد فارسی یا عربی است
+// HasPersianOrArabicDigits checks if string contains Persian or Arabic digits
 func HasPersianOrArabicDigits(s string) bool {
 	persian := []rune{'۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'}
 	arabic := []rune{'٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'}
@@ -107,4 +118,15 @@ func HasPersianOrArabicDigits(s string) bool {
 		}
 	}
 	return false
+}
+
+// RemoveNonDigits removes all non-digit characters
+func RemoveNonDigits(s string) string {
+	result := make([]rune, 0, len(s))
+	for _, ch := range s {
+		if unicode.IsDigit(ch) {
+			result = append(result, ch)
+		}
+	}
+	return string(result)
 }
