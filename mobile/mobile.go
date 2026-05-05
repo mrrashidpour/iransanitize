@@ -149,7 +149,7 @@ func isValidFormat(mobile string, option Option) bool {
 	if option.ValidatePrefix {
 		prefix := mobile[0:3]
 		validPrefixes := map[string]bool{
-			"091": true, "092": true, "093": true, "094": true,
+			"090": true, "091": true, "092": true, "093": true, "094": true,
 			"095": true, "096": true, "097": true, "098": true, "099": true,
 		}
 		if !validPrefixes[prefix] {
