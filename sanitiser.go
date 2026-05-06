@@ -6,28 +6,9 @@ import (
 )
 
 // ============ Mobile Functions ============
-type MobileOption = mobile.Option
 
-var (
-	DefaultMobileOptions = mobile.DefaultOptions
-	LenientMobileOptions = mobile.LenientOptions
-	StrictMobileOptions  = mobile.StrictOptions
-)
-
-func SanitizeMobile(mobileStr string, opts ...MobileOption) string {
-	return mobile.Sanitize(mobileStr, opts...)
-}
-
-func ConvertMobileToInternational(mobileStr string) string {
-	return mobile.ConvertToInternational(mobileStr)
-}
-
-func IsValidMobile(mobileStr string) bool {
-	return mobile.IsValid(mobileStr)
-}
-
-func ExtractMobileOperator(mobileStr string) string {
-	return mobile.ExtractOperator(mobileStr)
+func SanitizeMobile(mobileStr string) string {
+	return mobile.Sanitize(mobileStr)
 }
 
 func MaskMobile(mobileStr string) string {
@@ -39,6 +20,7 @@ func CompareMobile(mobile1, mobile2 string) bool {
 }
 
 // ============ Date Functions ============
+
 // SanitizeDate تاریخ را به فرمت استاندارد YYYY-MM-DD تبدیل می‌کند
 func SanitizeDate(dateStr string) string {
 	return date.SanitizeDate(dateStr)
