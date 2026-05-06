@@ -3,6 +3,7 @@ package iransanitize
 import (
 	"github.com/mrrashidpour/iransanitize/date"
 	"github.com/mrrashidpour/iransanitize/mobile"
+	"github.com/mrrashidpour/iransanitize/text"
 )
 
 // ============ Mobile Functions ============
@@ -36,4 +37,11 @@ func ConvertDateToJalali(dateStr string) string {
 	// این تابع را بعداً اضافه می‌کنیم
 	// فعلاً کامنت شده
 	return ""
+}
+
+// ============ Text Functions ============
+
+// SanitizeText پاکسازی متن
+func SanitizeText(dateStr string, keepNewlines bool) string {
+	return text.Sanitize(dateStr, keepNewlines)
 }
