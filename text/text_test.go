@@ -213,9 +213,9 @@ func TestSanitize(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeText(tt.input, tt.keepNewlines)
+			result := Sanitize(tt.input, tt.keepNewlines)
 			if result != tt.expected {
-				t.Errorf("SanitizeText() = %q, want %q , name %q", result, tt.expected, tt.name)
+				t.Errorf("Sanitize() = %q, want %q , name %q", result, tt.expected, tt.name)
 			}
 		})
 	}
@@ -262,9 +262,9 @@ func TestSanitizePercentEncoding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeText(tt.input, false)
+			result := Sanitize(tt.input, false)
 			if result != tt.expected {
-				t.Errorf("SanitizeText() = %q, want %q ,name %q", result, tt.expected, tt.name)
+				t.Errorf("Sanitize() = %q, want %q ,name %q", result, tt.expected, tt.name)
 			}
 		})
 	}
@@ -311,9 +311,9 @@ func TestSanitizeXSS(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeText(tt.input, false)
+			result := Sanitize(tt.input, false)
 			if result != tt.expected {
-				t.Errorf("SanitizeText() = %q, want %q", result, tt.expected)
+				t.Errorf("Sanitize() = %q, want %q", result, tt.expected)
 			}
 		})
 	}
@@ -324,7 +324,7 @@ func TestSanitizeInvalidUTF8(t *testing.T) {
 	// Create invalid UTF-8 string
 	invalidUTF8 := string([]byte{0x48, 0x65, 0x6C, 0x6C, 0x6F, 0xFF, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64})
 
-	result := SanitizeText(invalidUTF8, false)
+	result := Sanitize(invalidUTF8, false)
 	if result != "" {
 		t.Errorf("Expected empty string for invalid UTF-8, got %q", result)
 	}
@@ -371,33 +371,33 @@ func TestSanitizeWithNewlines(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeText(tt.input, true)
+			result := Sanitize(tt.input, true)
 			if result != tt.expected {
-				t.Errorf("SanitizeText() = %q, want %q", result, tt.expected)
+				t.Errorf("Sanitize() = %q, want %q", result, tt.expected)
 			}
 		})
 	}
 }
 
 // Benchmark tests
-func BenchmarkSanitizeText(b *testing.B) {
+func BenchmarkSanitize(b *testing.B) {
 	input := "<p>Hello <strong>World</strong> this is a <a href='#'>test</a> string with %20percent%20encoding</p>"
 
 	b.Run("without newlines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			SanitizeText(input, false)
+			Sanitize(input, false)
 		}
 	})
 
 	b.Run("with newlines", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			SanitizeText(input, true)
+			Sanitize(input, true)
 		}
 	})
 
 	b.Run("simple text", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			SanitizeText("Hello World", false)
+			Sanitize("Hello World", false)
 		}
 	})
 }

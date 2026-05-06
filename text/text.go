@@ -9,7 +9,7 @@ import (
 
 // SanitizeText sanitizes text similar to WordPress sanitize_textarea_field()
 // keepNewlines: true preserves line breaks, false collapses all whitespace
-func SanitizeText(str interface{}, keepNewlines bool) string {
+func Sanitize(str interface{}, keepNewlines bool) string {
 	// Return empty string for arrays or objects (maps/slices in Go)
 	switch str.(type) {
 	case map[string]interface{}, []interface{}:
