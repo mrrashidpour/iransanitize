@@ -5,8 +5,8 @@ import (
 	"unicode"
 )
 
-// ConvertPersianArabicToEnglish converts Persian/Arabic digits to English
-func ConvertPersianArabicToEnglish(s string) string {
+// ConvertToEnglishDigits converts Persian/Arabic digits to English
+func ConvertToEnglishDigits(s string) string {
 	persian := []rune{'۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'}
 	arabic := []rune{'٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'}
 

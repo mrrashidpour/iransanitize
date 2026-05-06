@@ -28,15 +28,10 @@ func Compare(mobile1, mobile2 string) bool {
 }
 
 // NormalizeBatch پاکسازی چندین شماره موبایل به صورت همزمان
-func NormalizeBatch(mobiles []string, opts ...Option) []string {
+func NormalizeBatch(mobiles []string) []string {
 	result := make([]string, 0, len(mobiles))
-	option := DefaultOptions
-	if len(opts) > 0 {
-		option = opts[0]
-	}
-
 	for _, m := range mobiles {
-		cleaned := Sanitize(m, option)
+		cleaned := Sanitize(m)
 		if cleaned != "" {
 			result = append(result, cleaned)
 		}
@@ -46,8 +41,8 @@ func NormalizeBatch(mobiles []string, opts ...Option) []string {
 }
 
 // ExtractUnique استخراج شماره‌های یکتا از یک لیست
-func ExtractUnique(mobiles []string, opts ...Option) []string {
-	normalized := NormalizeBatch(mobiles, opts...)
+func ExtractUnique(mobiles []string) []string {
+	normalized := NormalizeBatch(mobiles)
 
 	seen := make(map[string]bool)
 	unique := make([]string, 0, len(normalized))
@@ -90,22 +85,4 @@ func FormatWithSpace(mobile string) string {
 	}
 
 	return cleaned[:4] + " " + cleaned[4:7] + " " + cleaned[7:]
-}
-
-// IsIranCell بررسی می‌کند که شماره متعلق به ایرانسل باشد
-func IsIranCell(mobile string) bool {
-	operator := ExtractOperator(mobile)
-	return operator == "ایرانسل"
-}
-
-// IsHamrahAvval بررسی می‌کند که شماره متعلق به همراه اول باشد
-func IsHamrahAvval(mobile string) bool {
-	operator := ExtractOperator(mobile)
-	return operator == "همراه اول"
-}
-
-// IsRightel بررسی می‌کند که شماره متعلق به رایتل باشد
-func IsRightel(mobile string) bool {
-	operator := ExtractOperator(mobile)
-	return operator == "رایتل"
 }

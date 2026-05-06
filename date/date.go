@@ -17,7 +17,7 @@ func SanitizeDate(date string) string {
 
 	// مرحله 1: پاکسازی اولیه
 	raw := strings.TrimSpace(date)
-	raw = common.ConvertPersianArabicToEnglish(raw)
+	raw = common.ConvertToEnglishDigits(raw)
 	raw = strings.ReplaceAll(raw, "/", "-")
 
 	// مرحله 2: جدا کردن بخش‌ها
