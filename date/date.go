@@ -53,6 +53,9 @@ func SanitizeDate(date string) string {
 		if err != nil {
 			return ""
 		}
+		if gYear < 1821 || gYear > 2100 {
+			return ""
+		}
 		return fmt.Sprintf("%04d-%02d-%02d", gYear, gMonth, gDay)
 	}
 
@@ -67,7 +70,8 @@ func SanitizeDate(date string) string {
 
 // isValidGregorian بررسی اعتبار تاریخ میلادی
 func isValidGregorian(year, month, day int) bool {
-	if year < 1000 || year > 2100 {
+
+	if year < 1821 || year > 2100 {
 		return false
 	}
 	if month < 1 || month > 12 {
