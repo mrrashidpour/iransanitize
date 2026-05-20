@@ -4,15 +4,31 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	jalaali "github.com/jalaali/go-jalaali"
 	"github.com/mrrashidpour/iransanitize/internal/common"
 )
 
+var maxYear = time.Now().Year()
+var minYear = 1921
+
 // SanitizeDate تاریخ را به فرمت استاندارد YYYY-MM-DD (میلادی) تبدیل می‌کند
-func SanitizeDate(date string) string {
+func SanitizeDate(date string, options ...Option) string {
 	if date == "" {
 		return ""
+	}
+
+	if len(options) == 1 {
+		option := options[0]
+
+		if option.MinYear > 0 {
+			minYear = option.MinYear
+		}
+		if option.MaxYear > 0 {
+			maxYear = option.MaxYear
+		}
+
 	}
 
 	// مرحله 1: پاکسازی اولیه
@@ -53,7 +69,7 @@ func SanitizeDate(date string) string {
 		if err != nil {
 			return ""
 		}
-		if gYear < 1921 || gYear > 2100 {
+		if gYear < minYear || gYear > maxYear {
 			return ""
 		}
 		return fmt.Sprintf("%04d-%02d-%02d", gYear, gMonth, gDay)
@@ -71,7 +87,7 @@ func SanitizeDate(date string) string {
 // isValidGregorian بررسی اعتبار تاریخ میلادی
 func isValidGregorian(year, month, day int) bool {
 
-	if year < 1921 || year > 2100 {
+	if year < minYear || year > maxYear {
 		return false
 	}
 	if month < 1 || month > 12 {
