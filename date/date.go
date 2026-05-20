@@ -14,21 +14,18 @@ var maxYear = time.Now().Year()
 var minYear = 1921
 
 // SanitizeDate تاریخ را به فرمت استاندارد YYYY-MM-DD (میلادی) تبدیل می‌کند
-func SanitizeDate(date string, options ...Option) string {
+func SanitizeDate(date string, option *Option) string {
 	if date == "" {
 		return ""
 	}
 
-	if len(options) == 1 {
-		option := options[0]
-
+	if option != nil {
 		if option.MinYear > 0 {
 			minYear = option.MinYear
 		}
 		if option.MaxYear > 0 {
 			maxYear = option.MaxYear
 		}
-
 	}
 
 	// مرحله 1: پاکسازی اولیه
@@ -111,9 +108,4 @@ func isValidGregorian(year, month, day int) bool {
 // isGregorianLeapYear بررسی کبیسه بودن سال میلادی
 func isGregorianLeapYear(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
-}
-
-// IsValidDate بررسی اعتبار تاریخ
-func IsValidDate(date string) bool {
-	return SanitizeDate(date) != ""
 }

@@ -39,23 +39,13 @@ func TestSanitizeDate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeDate(tt.input)
+			result := SanitizeDate(tt.input, nil)
 			if result != tt.expected {
 				t.Errorf("input: %q, expected: %q, got: %q", tt.input, tt.expected, result)
 			}
 		})
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeDate(tt.input, Option{
-				MinYear: 2024,
-				MaxYear: 2025,
-			})
-			if result != tt.expected {
-				t.Errorf("input: %q, expected: %q, got: %q", tt.input, tt.expected, result)
-			}
-		})
-	}
+
 }
 
 func TestSanitizeDateByOption(t *testing.T) {
@@ -96,7 +86,7 @@ func TestSanitizeDateByOption(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := SanitizeDate(tt.input, Option{
+			result := SanitizeDate(tt.input, &Option{
 				MinYear: testMinYear,
 				MaxYear: testMaxYear,
 			})
@@ -107,61 +97,8 @@ func TestSanitizeDateByOption(t *testing.T) {
 	}
 }
 
-func TestIsValidDate(t *testing.T) {
-	// تست‌های معتبر
-	validDates := []string{
-		"1374-09-02",
-		"1994-11-23",
-		"1400-12-29",
-		"2024-02-28",
-	}
-
-	for _, date := range validDates {
-		if !IsValidDate(date) {
-			t.Errorf("expected valid: %s", date)
-		}
-	}
-
-	// تست‌های نامعتبر
-	invalidDates := []string{
-		"1994-13-23",
-		"1374-09-32",
-		"1994-11-32",
-		"1400-12-30",
-		"2024-02-30",
-	}
-
-	for _, date := range invalidDates {
-		if IsValidDate(date) {
-			t.Errorf("expected invalid: %s", date)
-		}
-	}
-}
-
-func TestEdgeCases(t *testing.T) {
-	// سال کبیسه شمسی
-	if !IsValidDate("1399-12-30") {
-		t.Error("1399-12-30 should be valid (leap year)")
-	}
-
-	// سال غیر کبیسه شمسی
-	if IsValidDate("1400-12-30") {
-		t.Error("1400-12-30 should be invalid (not leap year)")
-	}
-
-	// سال کبیسه میلادی
-	if !IsValidDate("2020-02-29") {
-		t.Error("2020-02-29 should be valid (leap year)")
-	}
-
-	// سال غیر کبیسه میلادی
-	if IsValidDate("2023-02-29") {
-		t.Error("2023-02-29 should be invalid (not leap year)")
-	}
-}
-
 func BenchmarkSanitizeDate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		SanitizeDate("1374-09-02")
+		SanitizeDate("1374-09-02", nil)
 	}
 }

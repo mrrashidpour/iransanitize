@@ -23,20 +23,15 @@ func CompareMobile(mobile1, mobile2 string) bool {
 // ============ Date Functions ============
 
 // SanitizeDate تاریخ را به فرمت استاندارد YYYY-MM-DD تبدیل می‌کند
-func SanitizeDate(dateStr string) string {
-	return date.SanitizeDate(dateStr)
-}
+func SanitizeDate(dateStr string, options ...date.Option) string {
 
-// IsValidDate بررسی اعتبار تاریخ
-func IsValidDate(dateStr string) bool {
-	return date.IsValidDate(dateStr)
-}
+	var option date.Option
 
-// ConvertDateToJalali تبدیل تاریخ میلادی به شمسی (اختیاری)
-func ConvertDateToJalali(dateStr string) string {
-	// این تابع را بعداً اضافه می‌کنیم
-	// فعلاً کامنت شده
-	return ""
+	if len(options) == 1 {
+		option = options[0]
+	}
+
+	return date.SanitizeDate(dateStr, &option)
 }
 
 // ============ Text Functions ============
