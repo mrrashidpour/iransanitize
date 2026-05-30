@@ -40,3 +40,8 @@ func SanitizeDate(dateStr string, options ...date.Option) string {
 func SanitizeText(dateStr string, keepNewlines bool) string {
 	return text.Sanitize(dateStr, keepNewlines)
 }
+
+// LenText شمارش متن
+func LenText(s string) int {
+	return text.CountChars(s)
+}
