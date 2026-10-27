@@ -9,66 +9,48 @@ import (
 
 // SanitizeText sanitizes text similar to WordPress sanitize_textarea_field()
 // keepNewlines: true preserves line breaks, false collapses all whitespace
-func Sanitize(str interface{}, keepNewlines bool) string {
-	// Return empty string for arrays or objects (maps/slices in Go)
+func Sanitize(str any, keepNewlines bool) string {
 	switch str.(type) {
-	case map[string]interface{}, []interface{}:
+	case map[string]any, []any:
 		return ""
 	}
-
-	// Convert to string
-	var s string
-	switch v := str.(type) {
-	case string:
-		s = v
-	default:
+	s, ok := str.(string)
+	if !ok {
 		if str == nil {
 			return ""
 		}
-		s = ""
+		return ""
 	}
 
-	// Check for invalid UTF-8
 	filtered := checkInvalidUTF8(s, false)
 	if filtered == "" && s != "" {
 		return ""
 	}
 
-	// Handle HTML tags if present
 	if strings.Contains(filtered, "<") {
 		filtered = preKsesLessThan(filtered)
-		filtered = stripAllTags(filtered, false)
+		filtered = stripAllTags(filtered, !keepNewlines)
 		filtered = strings.ReplaceAll(filtered, "<\n", "&lt;\n")
 	}
 
-	// Remove extra whitespace if newlines not needed
 	if !keepNewlines {
-		whitespaceRegex := regexp.MustCompile(`[\r\n\t ]+`)
-		filtered = whitespaceRegex.ReplaceAllString(filtered, " ")
-	} else {
-		// Preserve newlines but replace tabs with spaces
-		filtered = strings.ReplaceAll(filtered, "\t", " ")
+		re := regexp.MustCompile(`[\r\n\t ]+`)
+		filtered = re.ReplaceAllString(filtered, " ")
 	}
-
 	filtered = strings.TrimSpace(filtered)
 
-	// Remove percent-encoded characters (except %20 which becomes space)
-	percentRegex := regexp.MustCompile(`%[a-fA-F0-9]{2}`)
-
-	if percentRegex.MatchString(filtered) {
-		// First, replace %20 with space
-		filtered = strings.ReplaceAll(filtered, "%20", " ")
-
-		// Remove all other percent encodings
-		filtered = percentRegex.ReplaceAllString(filtered, "")
-
-		// Clean up extra spaces
-		spaceRegex := regexp.MustCompile(` +`)
-		filtered = spaceRegex.ReplaceAllString(filtered, " ")
+	percentRe := regexp.MustCompile(`(?i)%[a-f0-9]{2}`)
+	found := false
+	for percentRe.MatchString(filtered) {
+		filtered = percentRe.ReplaceAllString(filtered, "")
+		found = true
+	}
+	if found {
+		spaceRe := regexp.MustCompile(` +`)
+		filtered = spaceRe.ReplaceAllString(filtered, " ")
 		filtered = strings.TrimSpace(filtered)
 	}
 
-	// Escape HTML special characters in remaining text (for unclosed tags)
 	filtered = strings.ReplaceAll(filtered, "<", "&lt;")
 	filtered = strings.ReplaceAll(filtered, ">", "&gt;")
 
